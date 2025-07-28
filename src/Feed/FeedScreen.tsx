@@ -1,59 +1,85 @@
-import { FlatList, Image, StatusBar, StyleSheet, Text, useColorScheme, View } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
 import { FeedCard } from './FeedCard';
-import React from 'react';
-import { useSelector } from 'react-redux';
-import { store } from '../store';
+import React, { act } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchNextPage } from '../reducer/thunk';
+import { AppDispatch } from '../store';
+import { ImageData } from '../types';
 
 export const FeedScreen = () => {
-  const feedData = useSelector((state :any )=>state.imageUrls) ;
+  const { imageUrls : feedData, hasMore, page, isLoading }= useSelector((state :any )=>state.images) ;
+  const dispatch = useDispatch<AppDispatch>();
+  const [scrollY, setScrollY] = React.useState(0.1);
 
-  React.useEffect(()=>{
-
+  // Effects
+  React.useEffect(()=>{    
+    dispatch(fetchNextPage({ page: 0, perPage: 10 }));
   },[]);
+
+  // Handlers
+  const fetchMore = React.useCallback(() => {
+    if (isLoading || !hasMore) return;
+
+
+      if (hasMore) {
+        dispatch(fetchNextPage({ page, perPage: 10 }));
+      }
+
+  }, [hasMore, dispatch, page]);
+
+  // Callbacks
+  const renderItem = React.useCallback(({ item, index }: { item: ImageData, index: number }) => (
+    <FeedCard 
+      item={item} 
+      shouldElevate={index < scrollY && index + 1 >= scrollY} // Elevate the card if it is in the middle of the screen.
+    />
+  ), [scrollY]);
 
   return (
     <View style={styles.container}>
-      <FlatList 
-        data = {[1,2]}
-          keyExtractor={(_, i) => i.toString()}
-        renderItem = {() => {
-        
-          return (
-            <View style={styles.itemStyle}>
-      <Image
-         source={{
-          uri:   'https://picsum.photos/seed/61/300/200',
-        }}
-        style={styles.tinyLogo}
-         resizeMode={'cover'}
-
-      />
-          <View style={{flexDirection:"row", justifyContent:"space-between", padding: 12}}>
-        <Text>Video 1</Text>
-        <Text>01:12</Text>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Posts</Text>
       </View>
-
-            </View>
-          );
+      <FlatList 
+        data = {feedData}
+        keyExtractor={(item) => item.id}
+        renderItem = {renderItem}
+        contentContainerStyle = {{ padding: 12 }}
+        onEndReached={fetchMore} // Trigger fetchMore when the end is reached
+        onEndReachedThreshold={0.5} 
+        onScroll={({ nativeEvent }) => {
+          setScrollY((nativeEvent.contentOffset.y/300) + 1);
         }}
-        contentContainerStyle = {{padding: 12}}
       />
-  
+      
+      <ActivityIndicator 
+        animating={isLoading}
+        size="large"
+        color="black"
+        style = {styles.activityIndicator}
+      />
     </View>
   );
 }
 
+// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-   itemStyle: {
-    width:"100%",
-    marginVertical: 12,
+  header: {
+    padding: 12,
+    backgroundColor: 'white',
+    alignItems: 'center',
+    marginTop: 48,
   },
-    tinyLogo: {
-    width: "100%",
-    height: 234,
-    borderRadius:12
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
   },
+  activityIndicator: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+  }
 });

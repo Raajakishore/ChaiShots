@@ -1,3 +1,5 @@
+import { ImageData } from "../types";
+
 const imageUrls = [
   'https://picsum.photos/seed/1/300/200',
   'https://picsum.photos/seed/2/300/200',
@@ -101,18 +103,48 @@ const imageUrls = [
   'https://picsum.photos/seed/100/300/200',
 ];
 
-const mockServerImplementation = async (uri, page, perPage )=>{
+// Create ImageData objects from the image URLs
+const imageData: ImageData[] = imageUrls.map((url, idx) => {
 
-    const start = page * perPage;
-    const nextItems = imageUrls.slice(start, start + perPage);
-    return {
-        items: nextItems,
-        hasMore: start + perPage < imageUrls.length,
-    };
+  return {
+  id: idx.toString(),
+  thumbnail: url,
+  videoTitle: `Video Title ${idx+1}`,
+  duration: `${Math.floor(Math.random() * 10) + 1}:0${Math.floor(Math.random() * 6)}`,
+}});
 
-}
+// Mock server implementation to simulate fetching images.
+// This is a mock implementation to replace the actual API calls in production.
+//It will return images after a second to simulate network latency.
+const mockServerImplementation = async (
+  uri: string,
+  page: number,
+  perPage: number
+) => {
+  return new Promise((resolve: (value: { items: ImageData[]; hasMore: boolean }) => void) => {
 
-export const getImagesApi = async ( page, perPage )=>{
-    const data = await mockServerImplementation('https://get_images_mock_implementation', page, perPage);
-    return data;
+    setTimeout(() => {
+        const start = page * perPage;
+        const nextItems = imageData.slice(start, start + perPage);
+        
+        resolve({
+          items: nextItems,
+          hasMore: start + perPage < imageData.length,
+        });
+    }, 1000); // Simulate network delay  
+  });
+};
+
+// To fetch images from the mock server
+export const getImagesApi = async (
+  page: number,
+  perPage: number
+) => {
+  const data = await mockServerImplementation(
+    'https://get_images_mock_implementation',
+    page,
+    perPage
+  );
+
+  return data;
 };

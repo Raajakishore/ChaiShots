@@ -69,6 +69,14 @@ This is one way to run your app — you can also build it directly from Android 
 
 https://github.com/user-attachments/assets/0a45d32c-ab4d-4418-b0b0-593a6f86c2aa
 
+## Architecture
+
+### 1. Tech Stack & Tooling  
+- **React Native CLI** — fast iteration, easy native APIs  
+- **TypeScript** — static typing, IDE support, safer refactors  
+- **Redux Toolkit** — centralized, predictable state with minimal boilerplate  
+- **redux-persist** / **AsyncStorage** — durable state across launches  
+- **react-native-fast-image** — disk‑caching and priority loading for thumbnails  
 
 ## Optimisations:
 

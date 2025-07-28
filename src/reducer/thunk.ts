@@ -16,6 +16,6 @@ export const fetchNextPage = createAsyncThunk<
     const result =  await getImagesApi(page, perPage);
     FastImage.preload(result?.items.map(i => ({ uri: i.thumbnail })));
 
-    return result;
+    return {...result, page};
   }
 );

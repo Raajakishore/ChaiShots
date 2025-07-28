@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchNextPage } from '../reducer/thunk';
 import { AppDispatch } from '../store';
 import { ImageData } from '../types';
+import { resetPage } from '../reducer/reducer';
 
 export const FeedScreen = () => {
   const { imageUrls : feedData, hasMore, page, isLoading }= useSelector((state :any )=>state.images) ;
@@ -14,13 +15,12 @@ export const FeedScreen = () => {
   // Effects
   React.useEffect(()=>{    
     dispatch(fetchNextPage({ page: 0, perPage: 10 }));
+    dispatch(resetPage()); // set initial page to 0
   },[]);
 
   // Handlers
   const fetchMore = React.useCallback(() => {
     if (isLoading || !hasMore) return;
-
-
       if (hasMore) {
         dispatch(fetchNextPage({ page, perPage: 10 }));
       }

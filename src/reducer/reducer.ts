@@ -12,16 +12,18 @@ export const imageSlice = createSlice({
   reducers: {
    setLoading: (state, action) => {
       state.isLoading = action.payload;
+    },
+    resetPage: (state) => {
+      state.page = 0;
     } 
   },
   extraReducers: (builder) => {
     builder.addCase('feed/fetchNextPage/fulfilled', (state, action: any) => {
-      const { items, hasMore } = action.payload;
-      
+      const { items, hasMore, page } = action.payload;
       state.imageUrls = [...state.imageUrls, ...items];
       state.hasMore = hasMore;
       state.isLoading = false;
-      state.page += 1;
+      state.page = page+1;
     });
     builder.addCase('feed/fetchNextPage/rejected', (state, action: any) => {
       console.error('Failed to fetch next page:', action.error.message);
@@ -31,4 +33,4 @@ export const imageSlice = createSlice({
   }
 })
 
-export const { setLoading } = imageSlice.actions;
+export const { setLoading, resetPage } = imageSlice.actions;

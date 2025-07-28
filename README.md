@@ -1,4 +1,6 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# ChaiShots
+
+This project was developed as part of an assignment from ChaiShots, focused on rendering images in an optimized, efficient, and cached manner.
 
 # Getting Started
 
@@ -62,36 +64,44 @@ If everything is set up correctly, you should see your new app running in the An
 
 This is one way to run your app — you can also build it directly from Android Studio or Xcode.
 
-## Step 3: Modify your app
+## Demo:
 
-Now that you have successfully run the app, let's make changes!
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+https://github.com/user-attachments/assets/0a45d32c-ab4d-4418-b0b0-593a6f86c2aa
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+## Optimisations:
 
-## Congratulations! :tada:
 
-You've successfully run and modified your React Native App. :partying_face:
+1. **Virtualized List Rendering**  
+   - Used `FlatList` with `onEndReachedThreshold` and `onEndReached` to window and paginate items rather than rendering all at once.
 
-### Now what?
+2. **Infinite Scroll Pagination**  
+   - Simulated network fetch in pages (e.g. 10 items at a time) to avoid large payloads and keep initial load fast.
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+3. **State Persistence**  
+   - **Redux Toolkit + redux‑persist** to bootstrap and cache feed data (`items`, `page`, `hasMore`) in AsyncStorage, enabling offline viewing on app restart.
 
-# Troubleshooting
+4. **Efficient Image Caching**  
+   - **react‑native‑fast‑image** with `cache: FastImage.cacheControl.immutable` (downloads once, then serves from disk) and `priority: FastImage.priority.high` to speed up visible thumbnails.
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+5. **Image Preloading**  
+   - Preloaded the next page of thumbnails via `FastImage.preload()` immediately after fetching data, eliminating blank placeholders on scroll.
 
-# Learn More
+6. **Memoized Cards**  
+   - Wrapped each card in `React.memo` with a custom props comparator (`item.id` + `shouldElevate`) to skip unnecessary re‑renders when unrelated props change.
 
-To learn more about React Native, take a look at the following resources:
+7. **Key Extraction**  
+    - Provided `keyExtractor={item => item.id}` on `FlatList` to help React maintain stable item identity and avoid reordering overhead.
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+8. **AsyncStorage Thunks**  
+    - Encapsulated persistence logic in Redux thunks (`loadImages` / `persistImages`) via `extraArgument` middleware, keeping components free of I/O concerns.
+  
+9. **Memoized Callbacks**  
+   - Used `useCallback` to wrap handlers (e.g., renderItem, press callbacks) so they’re not re‑created on every render, reducing child component updates.
+
+
+## Quality:
+
+1. **Leveraged TypeScript to enforce static typing and enhance overall code quality**
+

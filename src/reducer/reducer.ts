@@ -15,6 +15,7 @@ export const imageSlice = createSlice({
     },
     resetPage: (state) => {
       state.page = 0;
+      state.imageUrls = [];
     } 
   },
   extraReducers: (builder) => {

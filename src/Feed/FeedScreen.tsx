@@ -14,8 +14,8 @@ export const FeedScreen = () => {
 
   // Effects
   React.useEffect(()=>{    
-    dispatch(fetchNextPage({ page: 0, perPage: 10 }));
     dispatch(resetPage()); // set initial page to 0
+    dispatch(fetchNextPage({ page: 0, perPage: 10 }));
   },[]);
 
   // Handlers
@@ -46,7 +46,6 @@ export const FeedScreen = () => {
         renderItem = {renderItem}
         contentContainerStyle = {{ padding: 12 }}
         onEndReached={fetchMore} // Trigger fetchMore when the end is reached
-        onEndReachedThreshold={0.5} 
         onScroll={({ nativeEvent }) => {
           setScrollY((nativeEvent.contentOffset.y/300) + 1);
         }}
